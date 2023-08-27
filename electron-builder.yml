@@ -1,0 +1,48 @@
+appId: com.playground.app
+productName: playground
+directories:
+  buildResources: resource
+files:
+  - '!**/.vscode/*'
+  - '!src/*'
+  - '!test/*'
+  - '!release/*'
+  - '!electron.vite.config.{js,ts,mjs,cjs}'
+  - '!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md,pkg.md,readme.md,tailwind.config.js,postcss.config.js}'
+  - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
+  - '!{file.d.ts}'
+  - '!{.github/**}'
+asarUnpack:
+  - '**/*.{node,dll}'
+
+afterPack: afterPack.js
+
+win:
+  executableName: electron-app
+  target: nsis
+nsis:
+  artifactName: ${name}-${version}-setup.${ext}
+  shortcutName: ${productName}
+  uninstallDisplayName: ${productName}
+  createDesktopShortcut: always
+mac:
+  entitlementsInherit: build/entitlements.mac.plist
+  target: dmg
+  extendInfo:
+    - NSCameraUsageDescription: Application requests access to the device's camera.
+    - NSMicrophoneUsageDescription: Application requests access to the device's microphone.
+    - NSDocumentsFolderUsageDescription: Application requests access to the user's Documents folder.
+    - NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
+dmg:
+  artifactName: ${name}-${version}.${ext}
+linux:
+  target: AppImage
+  maintainer: electronjs.org
+  category: Utility
+appImage:
+  artifactName: ${name}-${version}.${ext}
+npmRebuild: false
+publish:
+  provider: github
+  owner: blank-x
+  repo: playground

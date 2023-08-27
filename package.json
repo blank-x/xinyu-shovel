@@ -1,0 +1,49 @@
+{
+  "name": "playground",
+  "version": "1.0.4",
+  "description": "",
+  "main": "./out/main/index.js",
+  "scripts": {
+    "dev": "electron-vite -w",
+    "dev:render": "electron-vite --rendererOnly",
+    "debug": "electron-vite --sourcemap",
+    "preview": "electron-vite preview",
+    "build": "electron-vite build",
+    "postinstall": "electron-builder install-app-deps",
+    "build+release": "npm run build && electron-builder",
+    "release": "npm run build && electron-builder",
+    "update:server": "cd dist1 && http-server -p 3000"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "about-window": "^1.15.2",
+    "bplist-parser": "^0.3.2",
+    "electron-log": "^4.4.8",
+    "electron-updater": "^5.3.0",
+    "iconutil": "^1.0.2",
+    "isbinaryfile": "^5.0.0",
+    "pinyin-pro": "^3.14.0"
+  },
+  "devDependencies": {
+    "@types/vue-router": "^2.0.0",
+    "@vitejs/plugin-vue": "^4.1.0",
+    "autoprefixer": "^10.4.14",
+    "debug": "^4.3.4",
+    "del": "^6.1.1",
+    "electron": "^24.4.0",
+    "electron-builder": "^23.6.0",
+    "electron-vite": "^1.0.22",
+    "element-plus": "^2.3.5",
+    "glob": "^10.2.6",
+    "normalize.css": "^8.0.1",
+    "postcss": "^8.4.23",
+    "sass": "^1.62.0",
+    "tailwindcss": "^3.3.2",
+    "unplugin-auto-import": "^0.15.3",
+    "unplugin-vue-components": "^0.24.1",
+    "vite": "^4.3.1",
+    "vue": "^3.2.47",
+    "vue-router": "^4.1.6"
+  }
+}

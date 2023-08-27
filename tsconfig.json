@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "paths": {
+      "@renderer/*": [
+        "./src/renderer/src/*"
+      ],
+      "@utils": [
+        "./src/utils/"
+      ]
+    }
+  }
+}
