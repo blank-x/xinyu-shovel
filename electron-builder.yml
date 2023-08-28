@@ -1,5 +1,5 @@
-appId: com.playground.app
-productName: playground
+appId: com.xinyu-shovel.app
+productName: xinyu-shovel
 directories:
   buildResources: resource
 files:
@@ -45,4 +45,4 @@ npmRebuild: false
 publish:
   provider: github
   owner: blank-x
-  repo: playground
+  repo: xinyu-shovel

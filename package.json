@@ -1,5 +1,5 @@
 {
-  "name": "playground",
+  "name": "xinyu-shovel",
   "version": "1.0.4",
   "description": "",
   "main": "./out/main/index.js",
@@ -12,7 +12,8 @@
     "postinstall": "electron-builder install-app-deps",
     "build+release": "npm run build && electron-builder",
     "release": "npm run build && electron-builder",
-    "update:server": "cd dist1 && http-server -p 3000"
+    "update:server": "cd dist1 && http-server -p 3000",
+    "build:mac": "npm run build && electron-builder --mac --config"
   },
   "author": "",
   "license": "ISC",
