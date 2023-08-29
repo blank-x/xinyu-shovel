@@ -1,6 +1,6 @@
 {
   "name": "xinyu-shovel",
-  "version": "1.0.5",
+  "version": "1.0.8",
   "description": "",
   "main": "./out/main/index.js",
   "scripts": {
@@ -12,7 +12,7 @@
     "postinstall": "electron-builder install-app-deps",
     "build+release": "npm run build && electron-builder",
     "release": "npm run build && electron-builder",
-    "update:server": "cd dist1 && http-server -p 3000",
+    "update:server": "cd dist && http-server -p 3000",
     "build:mac": "npm run build && electron-builder --mac --config"
   },
   "author": "",

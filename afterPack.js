@@ -1,3 +1,4 @@
+// https://www.electron.build/includes/hooks.html#afterpack
 const del = require("del");
 const glob = require("glob");
 const fs = require('fs');

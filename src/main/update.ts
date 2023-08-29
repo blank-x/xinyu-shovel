@@ -16,9 +16,9 @@ export function updateAll(mainWindow) {
   //
   // autoUpdater.setFeedURL(isDevelopment ? 'http://localhost:3000' : "http://localhost:3000")
 
-  autoUpdater.on('error', function () {
+  autoUpdater.on('error', function (error) {
     console.log('error')
-    sendUpdateMessage(message.error)
+    sendUpdateMessage(error)
   })
   autoUpdater.on('checking-for-update', function () {
     console.log('checking-for-update')
