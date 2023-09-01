@@ -64,7 +64,7 @@ class App {
       this.setTray();
 
       if (process.platform === "darwin") {
-        app.dock.setIcon(path.resolve(__dirname, "../../public/tray@4x.png"));
+        app.dock.setIcon(path.resolve(__dirname, "../../public/128x128.png"));
       }
       // 处理关闭窗口的程序，mac里即使关闭了窗口，程序仍然在运行，需要手动退出； 其他系统只要所有窗口都关闭了，直接退出程序
       // 这个只是惯例，需要根据用户的使用场景来定

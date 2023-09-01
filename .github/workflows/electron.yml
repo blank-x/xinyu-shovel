@@ -52,6 +52,8 @@ jobs:
       # 如果缓存没有命中，安装依赖
       - name: Install dependencies
         run: npm ci --include=dev
+      # 在electron-builder中使用特定的npm run release 会自动把打包的文件上传到github release中; 
+      # 但是无法指定
       - name: release
         run: npm run release
         env:
@@ -60,7 +62,7 @@ jobs:
       # 运行构建脚本
 #      - name: Build & release
 #        run: |
-      # npm run release 在electron-builder中使用特定的npm run release 会自动把打包的文件上传到github release中
+      # npm run release 
       # 在这里，因为需要将指定
 #          npm run build+release
 

@@ -28,7 +28,7 @@ beforePack: ./beforePack.js
 #   createDesktopShortcut: always
 mac:
   entitlementsInherit: build/entitlements.mac.plist
-  icon: 'logo.icns'
+  icon: 'public/logo.icns'
   extendInfo:
     - NSCameraUsageDescription: Application requests access to the device's camera.
     - NSMicrophoneUsageDescription: Application requests access to the device's microphone.
@@ -44,9 +44,9 @@ appImage:
   artifactName: ${name}-${version}.${ext}
 npmRebuild: false
 publish:
-  provider: github
-  owner: blank-x
-  repo: xinyu-shovel
+  # provider: github
+  # owner: blank-x
+  # repo: xinyu-shovel
   # 如果有签名，可以自定义静态服务器做更新
-  # provider: generic
-  # url: http://127.0.0.1:3000/
+  provider: generic
+  url: http://127.0.0.1:3000/

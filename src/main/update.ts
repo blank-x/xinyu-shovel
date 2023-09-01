@@ -13,8 +13,8 @@ export function updateAll(mainWindow) {
   //
   autoUpdater.forceDevUpdateConfig = true
   //
-  const isDevelopment = process.env.NODE_ENV === 'development'
-  autoUpdater.setFeedURL(isDevelopment ? 'http://localhost:3000' : "http://localhost:3000")
+  // const isDevelopment = process.env.NODE_ENV === 'development'
+  // autoUpdater.setFeedURL(isDevelopment ? 'http://localhost:3000' : "http://localhost:3000")
 
   autoUpdater.on('error', function (error) {
     console.log('error')
