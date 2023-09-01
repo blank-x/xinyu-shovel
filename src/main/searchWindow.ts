@@ -20,7 +20,6 @@ const toIconset = util.promisify(iconutil.toIconset);
 
 
 import {is} from "@utils";
-import {log} from "debug";
 
 class SearchWindow extends EventEmitter {
   private win: BrowserWindow;
