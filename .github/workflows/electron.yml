@@ -53,35 +53,23 @@ jobs:
       - name: Install dependencies
         run: npm ci --include=dev
       # 在electron-builder中使用特定的npm run release 会自动把打包的文件上传到github release中; 
-      # 但是无法指定
-      - name: release
-        run: npm run release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # 但是无法指定具体上传哪些文件
+      # - name: release
+        # run: npm run release
+        # env:
+          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # 运行构建脚本
-#      - name: Build & release
-#        run: |
-      # npm run release 
-      # 在这里，因为需要将指定
-#          npm run build+release
-
-#      - name: release
-#        uses: softprops/action-gh-release@v1
-#        with:
-#          draft: true
-#          files: |
-#            dist/*.exe
-#            dist/*.zip
-#            dist/*.dmg
-#            dist/*.AppImage
-#            dist/*.snap
-#            dist/*.deb
-#            dist/*.rpm
-#            dist/*.tar.gz
-#            dist/*.yml
-#            dist/*.blockmap
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+     - name: Build & release
+       run: npm run builder
+     - name: release
+       uses: softprops/action-gh-release@v1
+       with:
+         draft: true
+         files: |
+           dist/**/app.asar
+           dist/package.json
+       env:
+         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 

@@ -12,6 +12,8 @@
     "a": "node ./a.js",
     "postinstall": "electron-builder install-app-deps",
     "release": "npm run build && electron-builder",
+    "builder": "npm run build && electron-builder",
+
     "update:server": "cd dist && http-server -p 3000",
     "build:mac": "npm run build && electron-builder --mac --config"
   },
