@@ -60,16 +60,16 @@ jobs:
           # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # 运行构建脚本
-     - name: Build & release
-       run: npm run builder
-     - name: release
-       uses: softprops/action-gh-release@v1
-       with:
-         draft: true
-         files: |
-           dist/**/app.asar
-           dist/package.json
-       env:
-         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build & release
+        run: npm run builder
+      - name: release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          files: |
+            dist/**/app.asar
+            dist/package.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
