@@ -17,6 +17,9 @@ jobs:
     steps:
 
       - name: test github action
+        # https://docs.github.com/zh/actions/learn-github-actions/expressions#example-expression-in-an-if-conditional
+        # https://docs.github.com/zh/actions/learn-github-actions/expressions#contains
+        if: ${{endsWith(github.ref_name, '0')}}
         run: echo ${{github.ref_name}}
 
       # - uses: actions/checkout@v3
