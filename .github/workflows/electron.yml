@@ -72,7 +72,7 @@ jobs:
 
         # https://docs.github.com/zh/actions/learn-github-actions/expressions#example-expression-in-an-if-conditional
         # https://docs.github.com/zh/actions/learn-github-actions/expressions#contains
-        if: ${{!endsWith(github.ref_name, '0')}}
+        # if: ${{!endsWith(github.ref_name, '0')}}
         # uses: softprops/action-gh-release@v1
         # with:
         #   draft: true
