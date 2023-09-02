@@ -67,6 +67,7 @@ jobs:
       # 运行构建脚本
       - name: Build & release
         run: npm run builder
+        
       - name: release
         # https://docs.github.com/zh/actions/learn-github-actions/expressions#example-expression-in-an-if-conditional
         # https://docs.github.com/zh/actions/learn-github-actions/expressions#contains
