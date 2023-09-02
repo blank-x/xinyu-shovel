@@ -69,8 +69,8 @@ jobs:
         run: npm run builder
         
       - name: release
-        # https://docs.github.com/zh/actions/learn-github-actions/expressions#example-expression-in-an-if-conditional
-        # https://docs.github.com/zh/actions/learn-github-actions/expressions#contains
+      # https://docs.github.com/zh/actions/learn-github-actions/expressions#example-expression-in-an-if-conditional
+      # https://docs.github.com/zh/actions/learn-github-actions/expressions#contains
         if: ${{!endsWith(github.ref_name, '0')}}
         uses: softprops/action-gh-release@v1
         with:
@@ -81,8 +81,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         - name: release + dmg
-        # https://docs.github.com/zh/actions/learn-github-actions/expressions#example-expression-in-an-if-conditional
-        # https://docs.github.com/zh/actions/learn-github-actions/expressions#contains
+      # https://docs.github.com/zh/actions/learn-github-actions/expressions#example-expression-in-an-if-conditional
+      # https://docs.github.com/zh/actions/learn-github-actions/expressions#contains
         if: ${{endsWith(github.ref_name, '0')}}
         uses: softprops/action-gh-release@v1
         with:
