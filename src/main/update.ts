@@ -65,14 +65,14 @@ export function updateAll(mainWindow) {
 export function updateAllHandler(){
   autoUpdater.checkForUpdates()
 }
-
+// 仅更新app.asar
 export function updateRender() {
   let data = ''
   const remotePackage = https.request(
     {
       host: 'raw.githubusercontent.com',
       method: 'GET',
-      path: '/blank-x/playground/master/package.json'
+      path: '/blank-x/xinyu-shovel/master/package.json'
     },
     function (res) {
       res.setEncoding('utf8');
@@ -83,12 +83,15 @@ export function updateRender() {
       res.on('end', function () {
         const remotePkg = JSON.parse(data);
         const remoteVersion = remotePkg.version.split('.');
+        // app.getVersion 获取的是本地package.json的version版本
         const localVersion = app.getVersion().split('.');
-        // 版本好限定为三位, 例如 1.0.0, 1.0.1, 1.0.2
-        // 小版本升级为补丁版本，代表热更新 1.0.1-> 1.0.2
-        // 大版本或者此版本升级，代表需要重新下载安装包 1.0.1 -> 1.1.0
+        // 版本限定为三位, 例如 1.0.0, 1.0.1, 1.0.2
+        // 小版本升级为补丁版本，代表仅需要更新app.asar 1.0.1-> 1.0.2
+        // 大版本或者次版本升级，代表需要重新下载安装包 1.0.1 -> 1.1.0
         if (remoteVersion[0] > localVersion[0] || remoteVersion[1] > localVersion[1] ) {
           console.log('提示下载安装包')
+          // 请求GitHub上的包
+          
         } else if( remoteVersion[2] > localVersion[2]){
           requestRender(remotePkg.version)
         } else {
