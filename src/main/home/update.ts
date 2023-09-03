@@ -15,15 +15,14 @@ export async function checkUpdate(arg: {win: BrowserWindow}){
         path: '/blank-x/xinyu-shovel/master/package.json'
       },
       function (res) {
-        let data = ''
-  
+        let data = ''        
         res.setEncoding('utf8');
         res.on('data', function (d) {
           data += d;
         }); // 必须监听data事件才行；否则end事件不会触发
   
         res.on('end', function () {
-          const remotePkg = JSON.parse(data);
+          const remotePkg = JSON.parse(data);          
           resolve(remotePkg.version);
         })
       }
@@ -37,7 +36,8 @@ export async function checkUpdate(arg: {win: BrowserWindow}){
   // 小版本升级为补丁版本，代表仅需要更新app.asar 1.0.1-> 1.0.2
   // 大版本或者次版本升级，代表需要重新下载安装包 1.0.1 -> 1.1.0
   if (remoteVersionArr[0] > localVersion[0] || remoteVersionArr[1] > localVersion[1] ) {
-    downloadApp({win: arg.win, url:'' })
+    const version = `${remoteVersionArr[0]}.${remoteVersionArr[1]}.0`
+    downloadApp({win: arg.win, url:`https://github.com/blank-x/xinyu-shovel/releases/download/${version}/xinyu-shovel-${version}.dmg` })
     // 通知
   } else if( remoteVersionArr[2] > localVersion[2]){
     // requestRender(remotePkg.version)
