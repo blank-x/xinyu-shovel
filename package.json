@@ -1,8 +1,8 @@
 {
   "name": "xinyu-shovel",
-  "version": "1.0.4",
+  "version": "0.1.0",
   "description": "",
-  "main": "./out/main/index.js",
+  "main": "./out/main/home.js",
   "scripts": {
     "dev": "electron-vite -w",
     "dev:render": "electron-vite --rendererOnly",

@@ -1,6 +1,6 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw as RouteRecordRawCopy } from 'vue-router'
-import Doc from '@major/pages/doc/index.vue'
-import Main from '@major/pages/main/index.vue'
+import Doc from '@home/pages/doc/index.vue'
+import Main from '@home/pages/main/index.vue'
 
 export type RouteRecordRaw = RouteRecordRawCopy & {
   hidden?: boolean

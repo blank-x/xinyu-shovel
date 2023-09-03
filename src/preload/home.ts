@@ -1,12 +1,11 @@
 import {contextBridge, ipcRenderer} from 'electron';
-
+import { triggerUpdate } from 'constants/ipc';
 
 if (process.contextIsolated) {
   try {
-    contextBridge.exposeInMainWorld('electron', {
+    contextBridge.exposeInMainWorld('homeExpose', {
       onUpdate: (cb) => ipcRenderer.on('message', cb),
-      triggerRenderUpdate: () => ipcRenderer.invoke('main:triggerRenderUpdate'),
-      triggerAllUpdate: () => ipcRenderer.invoke('main:triggerAllUpdate'),
+      [triggerUpdate]: () => ipcRenderer.invoke(triggerUpdate),
 
     })
 

@@ -4,25 +4,47 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import {ElementPlusResolver} from 'unplugin-vue-components/resolvers'
 import vue from '@vitejs/plugin-vue'
-import zipPlugin from './vite-plugin-dist-tozip'
+
+const commonAlias = {
+  '@renderer': resolve('src/renderer'),
+  '@utils': resolve('src/utils'),
+  'constants': resolve('src/constants'),
+  'utils': resolve('src/utils'),
+  'renderer': resolve('src/renderer'),
+  'main': resolve('src/main'),
+  '@home': resolve('src/renderer/home/src'),
+  '@search': resolve('src/renderer/search/src'),
+}
 
 export default defineConfig({
   main: {
     plugins: [externalizeDepsPlugin()],
     resolve: {
       alias: {
-        '@renderer': resolve('src/renderer/src'),
-        '@utils': resolve('src/utils'),
+        ...commonAlias
       }
+    },
+    build: {
+      rollupOptions: {
+        input: {
+          search: resolve(__dirname, 'src/main/search.ts'),
+          home: resolve(__dirname, 'src/main/home/index.ts'),
+        },
+      },
     },
   },
   preload: {
     plugins: [externalizeDepsPlugin()],
+    resolve: {
+      alias: {
+        ...commonAlias
+      }
+    },
     build: {
       rollupOptions: {
         input: {
-          searchPreload: resolve(__dirname, 'src/preload/searchPreload.ts'),
-          index: resolve(__dirname, 'src/preload/index.ts'),
+          search: resolve(__dirname, 'src/preload/search.ts'),
+          home: resolve(__dirname, 'src/preload/home.ts'),
         },
       },
     },
@@ -32,16 +54,14 @@ export default defineConfig({
     build: {
       rollupOptions: {
         input: {
-          major: resolve(__dirname, 'src/renderer/major/index.html'),
+          home: resolve(__dirname, 'src/renderer/home/index.html'),
           search: resolve(__dirname, 'src/renderer/search/index.html'),
         }
       },
     },
     resolve: {
       alias: {
-        '@major': resolve('src/renderer/major/src'),
-        '@search': resolve('src/renderer/search/src'),
-        '@utils': resolve('src/utils'),
+        ...commonAlias
       }
     },
     plugins: [
