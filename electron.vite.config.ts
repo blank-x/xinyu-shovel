@@ -12,6 +12,7 @@ const commonAlias = {
   'utils': resolve('src/utils'),
   'renderer': resolve('src/renderer'),
   'main': resolve('src/main'),
+  'types': resolve('src/types'),
   '@home': resolve('src/renderer/home/src'),
   '@search': resolve('src/renderer/search/src'),
 }

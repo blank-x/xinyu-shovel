@@ -1,17 +1,13 @@
 {
   "compilerOptions": {
+    "strict": true,
     "baseUrl": "./",
     "esModuleInterop": true,
     "paths": {
-      "@renderer/*": [
-        "./src/renderer/src/*"
-      ],
-      "@utils": [
-        "./src/utils/"
-      ],
-      "constants/*": [
-        "./src/constants/*"
-      ],
+      "@renderer/*": [ "./src/renderer/src/*"],
+      "@utils": ["./src/utils/"],
+      "constants/*": [ "./src/constants/*"],
+      "types/*": ["./src/types/*"],
     }
   },
 }

@@ -1,18 +1,31 @@
 <template>
-  <div >
-    <C1 :model-value="da" @update:modelValue="update" />111
-    <el-button @click="getUpdate">获取更新</el-button>
-    <div class="w-32 h-32 bg-blue-500"></div>
-    <a href="https://github.com/blank-x/xinyu-shovel/releases/download/0.1.0/xinyu-shovel-1.0.4.dmg">xinyu-shovel-1.0.4.dmg</a>
+  <div>
+    <!-- <C1 :model-value="da" @update:modelValue="update" />111 -->
+    <el-button @click="check">获取更新</el-button>
+
+    <!-- <div class="w-32 h-32 bg-blue-500"></div> -->
+    <el-dialog v-model="dialogVisible" title="Tips" width="30%">
+      <span>{{ checkUpdateing ? 'checkUpdateing' : '' }}</span>
+      <span>{{ hasNewVersion ? '发现新版本'+ newVersion : '未发现新版本' }}</span>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="dialogVisible = false">Cancel</el-button>
+
+          <el-button v-if="!hasNewVersion" :loading="checkUpdateing" type="primary" @click="dialogVisible = false">
+            确定
+          </el-button>
+          <el-button v-if="hasNewVersion" :loading="checkUpdateing" type="primary" @click="updateDownload">
+            更新
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import {defineProps, defineEmits, defineComponent, ref, render} from 'vue'
-
-import { triggerUpdate, onUpdate } from 'constants/ipc';
-
-
+import { defineProps, defineEmits, defineComponent, ref, render, watch } from 'vue'
+import useUpdate from './updateHook';
 import C1 from '../../components/C1.vue'
 
 const props = defineProps({
@@ -21,23 +34,27 @@ const props = defineProps({
     default: []
   }
 })
+const dialogVisible = ref(false)
 
-const updateString = ref('')
+const {
+  updateCheck,
+  updateDownload,
+  checkUpdateing,
+  newVersion,
+  totalSize,
+  downloadSize, 
+  hasNewVersion,
+} = useUpdate();
 
+// watch(newVersion, (val)=>{
+//   if(val){
+//     dialogVisible.value = true;
+//   }
+// })
 
-window.homeExpose[onUpdate](function (ev, msg) {
-  console.log(msg)
-  updateString.value += msg
-  updateString.value += '\n'
-})
-
-const da = ref([1,2,3])
-
-const update = (v) => {
-  console.log(v)
-}
-const getUpdate = async () => {
-  window.homeExpose[triggerUpdate]();  
+const check = ()=>{
+  dialogVisible.value = true
+  updateCheck()
 }
 
 </script>

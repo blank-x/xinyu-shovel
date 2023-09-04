@@ -13,8 +13,10 @@ import { is, moveSecondScreen } from "@utils";
 import log from "electron-log";
 import path from "path";
 import {EventEmitter} from "events";
-import { triggerUpdate } from 'constants/ipc';
-import { checkUpdate } from './update';
+import { updateCheck, updateDownload } from 'constants/ipc';
+import { checkUpdate, downloadUpdate } from './update';
+
+log.transports.file.resolvePath = () => path.join(app.getPath('home'), 'xinyu-shovel-logs/main.log');
 // import SearchWindow from "./searchWindow";
 
 log.info("App starting...");
@@ -107,9 +109,13 @@ class Home extends EventEmitter {
     return this.win;
   }
   ipcBind() {
-    ipcMain.handle(triggerUpdate, async () => {
+    ipcMain.handle(updateCheck, async () => {
       // return await updateHandler(this.win)
       checkUpdate({win: this.win})
+    })
+    ipcMain.handle(updateDownload, async ({version}) => {
+      // return await updateHandler(this.win)
+      downloadUpdate({win: this.win, version})
     })
   }
   async devStart() {

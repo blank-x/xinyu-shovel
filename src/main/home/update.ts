@@ -1,13 +1,21 @@
 import {ipcMain, app, BrowserWindow} from 'electron';
 import {autoUpdater} from 'electron-updater'
 import https from 'https'
+import path from 'path';
+import log from "electron-log";
 
 const fs = require('fs');
 
+interface IParams{
+  win: BrowserWindow,
+  url: string,
+  version?: string
+}
 
+export async function checkUpdate({win}: IParams){
+  win.webContents.send('update', { type: 'checkUpdating' })
 
-export async function checkUpdate(arg: {win: BrowserWindow}){
-  const version = await new Promise<string>((resolve,reject)=>{
+  await new Promise<string>((resolve,reject)=>{
     https.request(
       {
         host: 'raw.githubusercontent.com',
@@ -22,55 +30,68 @@ export async function checkUpdate(arg: {win: BrowserWindow}){
         }); // 必须监听data事件才行；否则end事件不会触发
   
         res.on('end', function () {
-          const remotePkg = JSON.parse(data);          
+          const remotePkg = JSON.parse(data);
+          win.webContents.send('update', { type: 'checkUpdateFinish' })   
+          const localVersion = app.getVersion().split('.');
+          const remoteVersionArr = remotePkg.version.split('.');
+          // app.getVersion 获取的是本地package.json的version版本
+          // 版本限定为三位, 例如 1.0.0, 1.0.1, 1.0.2
+          // 小版本升级为补丁版本，代表仅需要更新app.asar 1.0.1-> 1.0.2
+          // 大版本或者次版本升级，代表需要重新下载安装包 1.0.1 -> 1.1.0
+          if (remoteVersionArr[0] > localVersion[0] || remoteVersionArr[1] > localVersion[1] || remoteVersionArr[2] > localVersion[2] ) {
+            const version = `${remoteVersionArr[0]}.${remoteVersionArr[1]}.0`
+            win.webContents.send('update', { type: 'versionUpdate', version })
+          } else {
+            // 没有更新
+            win.webContents.send('update', { type: 'versionUpdate', version : ''})
+          }
           resolve(remotePkg.version);
         })
       }
     ).end();
-  })  
-  const remoteVersionArr = version.split('.');
-  const localVersion = app.getVersion().split('.');
-
-  // app.getVersion 获取的是本地package.json的version版本
-  // 版本限定为三位, 例如 1.0.0, 1.0.1, 1.0.2
-  // 小版本升级为补丁版本，代表仅需要更新app.asar 1.0.1-> 1.0.2
-  // 大版本或者次版本升级，代表需要重新下载安装包 1.0.1 -> 1.1.0
-  if (remoteVersionArr[0] > localVersion[0] || remoteVersionArr[1] > localVersion[1] ) {
-    const version = `${remoteVersionArr[0]}.${remoteVersionArr[1]}.0`
-    downloadApp({win: arg.win, url:`https://github.com/blank-x/xinyu-shovel/releases/download/${version}/xinyu-shovel-${version}.dmg` })
-    // 通知
-  } else if( remoteVersionArr[2] > localVersion[2]){
-    // requestRender(remotePkg.version)
-    console.log('更新render')
-  }
-  
-  
+  })
 }
 
-export async function downloadApp({win, url}: {win: BrowserWindow, url: string}){
+export async function downloadUpdate({win, version='' }: IParams){
+  const localVersion = app.getVersion().split('.');
+  const remoteVersionArr = version.split('.');
+  if (remoteVersionArr[0] > localVersion[0] || remoteVersionArr[1] > localVersion[1] ) {
+    downloadApp({win, url:`https://github.com/blank-x/xinyu-shovel/releases/download/${version}/xinyu-shovel-${version}.dmg` })
+  } else if( remoteVersionArr[2] > localVersion[2]){
+    // requestRender(remotePkg.version)
+    downloadAsar({win, url: `https://github.com/blank-x/xinyu-shovel/releases/download/${version}/app.asar`})
+  }
+}
+
+export async function downloadApp({win, url}: IParams){
   // 目前没有代码签名，所以需要用户自己安装
   // autoUpdater.checkForUpdates()
   win.webContents.session.on('will-download', (event, item, webContents) => {
   // Set the save path, making Electron not to prompt a save dialog.
-    item.setSavePath('/tmp/save.pdf')
+    const fileName = path.basename(url);
+    item.setSavePath(app.getPath('downloads')+'xinyu-shovel-'+ fileName)
+    win.webContents.send('update', { type: 'beforeDownload', size: item.getTotalBytes() })
 
     item.on('updated', (event, state) => {
       if (state === 'interrupted') {
         console.log('Download is interrupted but can be resumed')
+        win.webContents.send('update', { type: 'downloadFailed' })
+
       } else if (state === 'progressing') {
         if (item.isPaused()) {
-          console.log('Download is paused')
+          win.webContents.send('update', { type: 'paused' })
         } else {
-          win.webContents.send('message', item.getReceivedBytes)
-          console.log(`Received bytes: ${item.getReceivedBytes()}`)
+          win.webContents.send('update', { type: 'downloading', size: item.getReceivedBytes() })
+
         }
       }
     })
     item.once('done', (event, state) => {
       if (state === 'completed') {
         console.log('Download successfully')
+        win.webContents.send('update', { type: 'downloadSuccess' })
       } else {
-        console.log(`Download failed: ${state}`)
+        win.webContents.send('update', { type: 'downloadFailed' })
       }
     })
   })
@@ -78,7 +99,7 @@ export async function downloadApp({win, url}: {win: BrowserWindow, url: string})
 
 }
 
-export async function downloadAsar(){
+export async function downloadAsar({win, url}: IParams){
   // 目前没有代码签名，所以需要用户自己安装
   // autoUpdater.checkForUpdates()
   return Promise.resolve(1)
@@ -86,11 +107,7 @@ export async function downloadAsar(){
 }
 
 // 手动下载
-export function updateAllHandlerNoSign(){
-
-
-  
-}
+export function updateAllHandlerNoSign(){}
 // 仅更新app.asar
 export function updateRender() {
   let data = ''
@@ -129,7 +146,7 @@ export function updateRender() {
   ).end();
 
 
-  const requestRender = (version) => {
+  const requestRender = (version: string) => {
     let data = ''
     https.request(
       {
@@ -140,7 +157,7 @@ export function updateRender() {
       function (res) {
 
         if (res.statusCode === 302) {
-          const redirectUrl = res.headers.location;
+          const redirectUrl = res.headers.location || '';
           console.log('Redirecting to:', redirectUrl);
 
           // 发起新的请求到重定向的目标 URL
