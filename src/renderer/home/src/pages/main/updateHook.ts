@@ -52,6 +52,8 @@ const useUpdate = () => {
     if(msg.type === 'downloadSuccess'){
       downloaded.value = true
       downloading.value = false
+      totalSize.value = 100
+      downloadSize.value = 100
     }
   })
  

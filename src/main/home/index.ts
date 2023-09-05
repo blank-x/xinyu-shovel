@@ -14,7 +14,7 @@ import log from "electron-log";
 import path from "path";
 import {EventEmitter} from "events";
 // import { updateCheck, updateDownload } from 'constants/ipc';
-import { checkUpdate, downloadUpdate, cancelDownloadUpdate } from './update';
+import { checkUpdate, downloadUpdate } from './update';
 
 log.transports.file.resolvePath = () => path.join(app.getPath('home'), 'xinyu-shovel-logs/main.log');
 // import SearchWindow from "./searchWindow";
@@ -39,7 +39,9 @@ class Home extends EventEmitter {
       width: Math.floor(client.width/1.5),
       // 设置高度
       height: Math.floor(client.height/1.5),
-      // 默认展示出窗口
+      // 隐藏窗口标题栏，方便自定义标题栏
+      titleBarStyle: 'hidden',  
+          // 默认展示出窗口
       show: false,
       webPreferences: {
         preload: path.resolve(__dirname, '../preload/home.js'),
@@ -114,10 +116,7 @@ class Home extends EventEmitter {
       downloadUpdate({win: this.win, version})
     })
 
-    ipcMain.handle('cancelUpdateDownload', async () => {
-      // return await updateHandler(this.win)
-      cancelDownloadUpdate()
-    })
+    
   }
   async devStart() {
     await app.whenReady();
