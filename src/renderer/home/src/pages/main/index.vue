@@ -1,15 +1,17 @@
 <template>
   <div>
     <!-- <C1 :model-value="da" @update:modelValue="update" />111 -->
-    <el-button @click="check">获取更新</el-button>
+    <el-button @click="updateCheck" :loading="checkUpdateing">获取更新</el-button>
 
     <!-- <div class="w-32 h-32 bg-blue-500"></div> -->
-    <el-dialog v-model="dialogVisible" title="Tips" width="30%">
-      <span>{{ checkUpdateing ? 'checkUpdateing' : '' }}</span>
-      <span>{{ hasNewVersion ? '发现新版本'+ newVersion : '未发现新版本' }}</span>
+    <el-dialog v-model="dialogVisible" title="Tips" width="30%" :close-on-click-modal="false">
+      <!-- <div v-if="checkUpdateing">检查更新中...</div> -->
+      <div>{{ hasNewVersion ? '发现新版本'+ newVersion : '未发现新版本' }}</div>
+      <el-progress v-if="downloadSize>0" :percentage="Math.floor(downloadSize/totalSize * 100)" />
+
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">Cancel</el-button>
+          <el-button @click="onClose">取消</el-button>
 
           <el-button v-if="!hasNewVersion" :loading="checkUpdateing" type="primary" @click="dialogVisible = false">
             确定
@@ -44,18 +46,21 @@ const {
   totalSize,
   downloadSize, 
   hasNewVersion,
+  cancelUpdateDownload
 } = useUpdate();
 
-// watch(newVersion, (val)=>{
-//   if(val){
-//     dialogVisible.value = true;
-//   }
-// })
+watch(checkUpdateing, (val)=>{
+  if(!val){
+    dialogVisible.value = true;
+  }
+})
 
-const check = ()=>{
-  dialogVisible.value = true
-  updateCheck()
+const onClose = ()=>{
+  cancelUpdateDownload()
+  dialogVisible.value = false
 }
+
+ 
 
 </script>
 

@@ -1,16 +1,17 @@
-import {ipcMain, app, BrowserWindow} from 'electron';
+import {ipcMain, app, BrowserWindow, DownloadItem, } from 'electron';
 import {autoUpdater} from 'electron-updater'
 import https from 'https'
 import path from 'path';
+import { execSync } from 'child_process'
 import log from "electron-log";
-
-const fs = require('fs');
 
 interface IParams{
   win: BrowserWindow,
-  url: string,
+  url?: string,
   version?: string
 }
+
+let downloadItem: DownloadItem | undefined;
 
 export async function checkUpdate({win}: IParams){
   win.webContents.send('update', { type: 'checkUpdating' })
@@ -34,12 +35,15 @@ export async function checkUpdate({win}: IParams){
           win.webContents.send('update', { type: 'checkUpdateFinish' })   
           const localVersion = app.getVersion().split('.');
           const remoteVersionArr = remotePkg.version.split('.');
+          
           // app.getVersion 获取的是本地package.json的version版本
           // 版本限定为三位, 例如 1.0.0, 1.0.1, 1.0.2
           // 小版本升级为补丁版本，代表仅需要更新app.asar 1.0.1-> 1.0.2
           // 大版本或者次版本升级，代表需要重新下载安装包 1.0.1 -> 1.1.0
           if (remoteVersionArr[0] > localVersion[0] || remoteVersionArr[1] > localVersion[1] || remoteVersionArr[2] > localVersion[2] ) {
             const version = `${remoteVersionArr[0]}.${remoteVersionArr[1]}.0`
+            console.log(version);
+            
             win.webContents.send('update', { type: 'versionUpdate', version })
           } else {
             // 没有更新
@@ -63,19 +67,23 @@ export async function downloadUpdate({win, version='' }: IParams){
   }
 }
 
-export async function downloadApp({win, url}: IParams){
+export async function downloadApp({win, url=''}: IParams){
   // 目前没有代码签名，所以需要用户自己安装
   // autoUpdater.checkForUpdates()
   win.webContents.session.on('will-download', (event, item, webContents) => {
+    downloadItem = item;
   // Set the save path, making Electron not to prompt a save dialog.
     const fileName = path.basename(url);
-    item.setSavePath(app.getPath('downloads')+'xinyu-shovel-'+ fileName)
+    const savePath = app.getPath('downloads')+ '/' + fileName 
+    console.log(savePath);
+    
+    item.setSavePath(savePath)
     win.webContents.send('update', { type: 'beforeDownload', size: item.getTotalBytes() })
 
     item.on('updated', (event, state) => {
       if (state === 'interrupted') {
         console.log('Download is interrupted but can be resumed')
-        win.webContents.send('update', { type: 'downloadFailed' })
+        win.webContents.send('update', { type: 'interrupted' })
 
       } else if (state === 'progressing') {
         if (item.isPaused()) {
@@ -90,6 +98,7 @@ export async function downloadApp({win, url}: IParams){
       if (state === 'completed') {
         console.log('Download successfully')
         win.webContents.send('update', { type: 'downloadSuccess' })
+        execSync(`open ${savePath}`)
       } else {
         win.webContents.send('update', { type: 'downloadFailed' })
       }
@@ -97,6 +106,10 @@ export async function downloadApp({win, url}: IParams){
   })
   win.webContents.downloadURL(url)
 
+}
+
+export async function cancelDownloadUpdate(){
+  downloadItem?.cancel()
 }
 
 export async function downloadAsar({win, url}: IParams){

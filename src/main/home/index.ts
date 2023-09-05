@@ -13,8 +13,8 @@ import { is, moveSecondScreen } from "@utils";
 import log from "electron-log";
 import path from "path";
 import {EventEmitter} from "events";
-import { updateCheck, updateDownload } from 'constants/ipc';
-import { checkUpdate, downloadUpdate } from './update';
+// import { updateCheck, updateDownload } from 'constants/ipc';
+import { checkUpdate, downloadUpdate, cancelDownloadUpdate } from './update';
 
 log.transports.file.resolvePath = () => path.join(app.getPath('home'), 'xinyu-shovel-logs/main.log');
 // import SearchWindow from "./searchWindow";
@@ -22,8 +22,8 @@ log.transports.file.resolvePath = () => path.join(app.getPath('home'), 'xinyu-sh
 log.info("App starting...");
 
 class Home extends EventEmitter {
-  static instance = null;
-  private win: BrowserWindow;
+  static instance: Home;
+  win: BrowserWindow;
   private willQuitApp = false;
   static create() {
     if(!Home.instance) {
@@ -33,15 +33,6 @@ class Home extends EventEmitter {
   }
   constructor() {
     super()
-    this.win = null;
-    this.init();
-    this.bindAppEvent();
-    this.bindWinEvent();
-    this.ipcBind();
-
-  }
-  init() {
-    // 获取屏幕的宽高
     const client = screen.getPrimaryDisplay().workArea;
     this.win = new BrowserWindow({
       // 设置宽度, 浮点数竟然在mac16寸上会有问题
@@ -61,11 +52,16 @@ class Home extends EventEmitter {
       // 生产环境下的渲染进程地址
       this.win.loadFile(path.join(__dirname, '../renderer/home/index.html'))
     }
+    this.bindAppEvent();
+    this.bindWinEvent();
+    this.ipcBind();
+
   }
+
   bindAppEvent() {
     // 新起一个程序,执行requestSingleInstanceLock的时候会触发其他程序的`second-instance`事件，这是后将第一个app的窗口打开
     app.on('second-instance', () => {
-      if (this.win.isMinimized()){
+      if (this.win?.isMinimized()){
         this.win.restore()
       }
       this.win?.show()
@@ -89,11 +85,11 @@ class Home extends EventEmitter {
   }
   bindWinEvent() {
     // 使用该事件 避免闪烁
-    this.win.on('ready-to-show', () => {
+    this.win?.on('ready-to-show', () => {
       this.win?.show()
 
     })
-    this.win.on('close', (e) => {
+    this.win?.on('close', (e) => {
 
       // 此处的willQuitApp是一个控制变量，用来标记是否要退出程序，在程序接收到要退出的信号时，在before-quit事件里被设置为true, 这时候不会做阻止退出的操作，直接退出了窗口
       if (this.willQuitApp) {
@@ -109,13 +105,18 @@ class Home extends EventEmitter {
     return this.win;
   }
   ipcBind() {
-    ipcMain.handle(updateCheck, async () => {
+    ipcMain.handle('updateCheck', async () => {
       // return await updateHandler(this.win)
       checkUpdate({win: this.win})
     })
-    ipcMain.handle(updateDownload, async ({version}) => {
+    ipcMain.handle('updateDownload', async (e, {version}) => {
       // return await updateHandler(this.win)
       downloadUpdate({win: this.win, version})
+    })
+
+    ipcMain.handle('cancelUpdateDownload', async () => {
+      // return await updateHandler(this.win)
+      cancelDownloadUpdate()
     })
   }
   async devStart() {

@@ -9,6 +9,7 @@ export type homeExposeType = {
   onUpdate: (cb: (ev: any, msg: updateMessageTypes)=>any) => any;
   updateCheck: () => any;
   updateDownload: (arg: {version: string}) => any
+  cancelUpdateDownload: () => any;
 }
 
 
