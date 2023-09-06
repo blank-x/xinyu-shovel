@@ -63,7 +63,8 @@ export default defineConfig({
     resolve: {
       alias: {
         ...commonAlias
-      }
+      },
+      
     },
     plugins: [
       vue(),

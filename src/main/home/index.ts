@@ -23,7 +23,7 @@ log.info("App starting...");
 
 class Home extends EventEmitter {
   static instance: Home;
-  win: BrowserWindow;
+  win: BrowserWindow | null;
   private willQuitApp = false;
   static create() {
     if(!Home.instance) {
@@ -99,7 +99,7 @@ class Home extends EventEmitter {
         this.win = null;
       } else {
         e.preventDefault();
-        this.win.hide();
+        this.win?.hide();
       }
     })
   }
@@ -109,11 +109,15 @@ class Home extends EventEmitter {
   ipcBind() {
     ipcMain.handle('updateCheck', async () => {
       // return await updateHandler(this.win)
-      checkUpdate({win: this.win})
+      if(this.win){
+        checkUpdate({win: this.win})
+      }
     })
     ipcMain.handle('updateDownload', async (e, {version}) => {
       // return await updateHandler(this.win)
-      downloadUpdate({win: this.win, version})
+      if(this.win){
+        downloadUpdate({win: this.win, version})
+      }
     })
 
     
@@ -124,7 +128,7 @@ class Home extends EventEmitter {
 
     // });
     const mainWindowInstance = Home.create();
-    mainWindowInstance.win.webContents.openDevTools({ mode: "detach" });
+    mainWindowInstance.win?.webContents.openDevTools({ mode: "detach" });
 
     // const searchWindowFn = function () {
     //   const searchWindow = SearchWindow.create();

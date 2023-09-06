@@ -1,4 +1,5 @@
 <template>
+  <Header />
   <router-view v-slot="{ Component }">
     <transition name="fade-transform" mode="out-in">
       <keep-alive>
@@ -8,12 +9,9 @@
   </router-view>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-export default defineComponent({
-  created() {
-  }
-})
+<script lang="ts" setup>
+import Header from '@home/src/components/header/index.vue'
+
 </script>
 
 <style lang="scss">
