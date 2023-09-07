@@ -15,6 +15,7 @@ interface IParams{
 
 log.info(app.getAppPath())
 
+let downloadItem: DownloadItem;
 
 export async function checkUpdate({win}: IParams){
   win.webContents.send('update', { type: 'checkUpdating' })
@@ -73,6 +74,7 @@ export async function downloadApp({win, url=''}: IParams){
   // 目前没有代码签名，所以需要用户自己安装
   // autoUpdater.checkForUpdates()
   win.webContents.session.on('will-download', (event, item, webContents) => {
+    downloadItem = item;
   // Set the save path, making Electron not to prompt a save dialog.
     const fileName = item.getFilename();
     const saveTempPath = app.getPath('downloads')+ '/' + 'temp-' + fileName 
@@ -128,14 +130,15 @@ export async function downloadApp({win, url=''}: IParams){
         win.webContents.send('update', { type: 'downloadFailed' })
       }
     })
-    ipcMain.handle('cancelUpdateDownload', async () => {
-      // return await updateHandler(this.win)
-      item?.cancel()
-    })
+
   })
   win.webContents.downloadURL(url)
 }
 
+ipcMain.handle('cancelUpdateDownload', async () => {
+// return await updateHandler(this.win)
+  downloadItem?.cancel?.()
+})
  
 
 export async function downloadAsar({win, url}: IParams){
@@ -218,6 +221,6 @@ export async function downloadAsar({win, url}: IParams){
         item?.cancel()
       })
     })
-  win.webContents.downloadURL(url)
+    url && win.webContents.downloadURL(url)
   
 }
