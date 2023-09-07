@@ -11,6 +11,7 @@ import {
 } from "electron";
 import { is, moveSecondScreen } from "@utils";
 import log from "electron-log";
+import createMenu from './menu';
 import path from "path";
 import {EventEmitter} from "events";
 // import { updateCheck, updateDownload } from 'constants/ipc';
@@ -128,7 +129,7 @@ class Home extends EventEmitter {
 
     // });
     const mainWindowInstance = Home.create();
-    mainWindowInstance.win?.webContents.openDevTools({ mode: "detach" });
+    // mainWindowInstance.win?.webContents.openDevTools({ mode: "detach" });
 
     // const searchWindowFn = function () {
     //   const searchWindow = SearchWindow.create();
@@ -203,5 +204,6 @@ class Home extends EventEmitter {
 
 app.whenReady().then(()=>{
   Home.create().startSingleApp();
+  createMenu()
 })
 
