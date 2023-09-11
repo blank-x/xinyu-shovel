@@ -1,8 +1,8 @@
-import {resolve} from 'path'
-import {defineConfig, externalizeDepsPlugin} from 'electron-vite'
+import { resolve } from 'path'
+import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
-import {ElementPlusResolver} from 'unplugin-vue-components/resolvers'
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import vue from '@vitejs/plugin-vue'
 
 const commonAlias = {
@@ -15,6 +15,7 @@ const commonAlias = {
   'types': resolve('src/types'),
   '@home': resolve('src/renderer/home/src'),
   '@search': resolve('src/renderer/search/src'),
+  '@components': resolve('src/renderer/components'),
 }
 
 export default defineConfig({
@@ -57,6 +58,8 @@ export default defineConfig({
         input: {
           home: resolve(__dirname, 'src/renderer/home/index.html'),
           search: resolve(__dirname, 'src/renderer/search/index.html'),
+          player: resolve(__dirname, 'src/renderer/player/index.html'),
+
         }
       },
     },
@@ -64,7 +67,7 @@ export default defineConfig({
       alias: {
         ...commonAlias
       },
-      
+
     },
     plugins: [
       vue(),

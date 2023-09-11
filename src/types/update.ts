@@ -1,15 +1,16 @@
 export type updateMessageTypes = {
-  type:  'checkUpdating' | 'checkUpdateFinish' | 'versionUpdate' |  'beforeDownload' |'downloading' | 'paused' | 'downloadFailed' | 'downloadSuccess',
+  type: 'checkUpdating' | 'checkUpdateFinish' | 'versionUpdate' | 'beforeDownload' | 'downloading' | 'paused' | 'downloadFailed' | 'downloadSuccess',
   size?: number,
   version?: string,
 }
 
 export type homeExposeType = {
   // home
-  onUpdate: (cb: (ev: any, msg: updateMessageTypes)=>any) => any;
+  onUpdate: (cb: (ev: any, msg: updateMessageTypes) => any) => any;
   updateCheck: () => any;
-  updateDownload: (arg: {version: string}) => any
+  updateDownload: (arg: { version: string }) => any
   cancelUpdateDownload: () => any;
+  openWindow: (windowName: string) => any;
 }
 
 

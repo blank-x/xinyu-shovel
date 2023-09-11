@@ -1,33 +1,16 @@
 <template>
-  <div>
+  <div class="w-auto h-screen overflow-auto" style="background-color: #F8FAFC;">
     <!-- <C1 :model-value="da" @update:modelValue="update" />111 -->
-    <el-button @click="updateCheck" :loading="checkUpdateing">获取更新</el-button>
-
     <!-- <div class="w-32 h-32 bg-blue-500"></div> -->
-    <el-dialog v-model="dialogVisible" title="Tips" width="30%" :close-on-click-modal="false">
-      <!-- <div v-if="checkUpdateing">检查更新中...</div> -->
-      <div>{{ hasNewVersion ? '发现新版本'+ newVersion : '未发现新版本' }}</div>
-      <el-progress v-if="downloadSize>0" :percentage="Math.floor(downloadSize/totalSize * 100)" />
-
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="onClose">取消</el-button>
-
-          <el-button v-if="!hasNewVersion" :loading="checkUpdateing" type="primary" @click="dialogVisible = false">
-            确定
-          </el-button>
-          <el-button v-if="hasNewVersion" :loading="checkUpdateing" type="primary" @click="updateDownload">
-            更新
-          </el-button>
-        </span>
-      </template>
-    </el-dialog>
+    <Update />
+    <Card @click="clickHandler" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { defineProps, defineEmits, defineComponent, ref, render, watch } from 'vue'
-import useUpdate from './updateHook';
+import Update from '@home/components/update/index.vue';
+import Card from '@home/components/card/index.vue';
 import C1 from '../../components/C1.vue'
 
 const props = defineProps({
@@ -36,31 +19,14 @@ const props = defineProps({
     default: []
   }
 })
-const dialogVisible = ref(false)
 
-const {
-  updateCheck,
-  updateDownload,
-  checkUpdateing,
-  newVersion,
-  totalSize,
-  downloadSize, 
-  hasNewVersion,
-  cancelUpdateDownload
-} = useUpdate();
+const clickHandler = () => {
+  console.log('click');
+  window.homeExpose.openWindow('player');
 
-watch(checkUpdateing, (val)=>{
-  if(!val){
-    dialogVisible.value = true;
-  }
-})
-
-const onClose = ()=>{
-  cancelUpdateDownload()
-  dialogVisible.value = false
 }
 
- 
+
 
 </script>
 

@@ -1,5 +1,5 @@
-appId: com.xinyu-shovel.app
-productName: xinyu-shovel
+appId: com.xinyu.app
+productName: xinyu
 directories:
   buildResources: resource
 files:

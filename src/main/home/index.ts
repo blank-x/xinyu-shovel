@@ -13,7 +13,7 @@ import { is, moveSecondScreen } from "@utils";
 import log from "electron-log";
 import createMenu from './menu';
 import path from "path";
-import {EventEmitter} from "events";
+import { EventEmitter } from "events";
 // import { updateCheck, updateDownload } from 'constants/ipc';
 import { checkUpdate, downloadUpdate } from './update';
 
@@ -24,10 +24,12 @@ log.info("App starting...");
 
 class Home extends EventEmitter {
   static instance: Home;
+  static progressInterval: NodeJS.Timer | undefined;
   win: BrowserWindow | null;
   private willQuitApp = false;
+
   static create() {
-    if(!Home.instance) {
+    if (!Home.instance) {
       Home.instance = new Home();
     }
     return Home.instance;
@@ -37,12 +39,12 @@ class Home extends EventEmitter {
     const client = screen.getPrimaryDisplay().workArea;
     this.win = new BrowserWindow({
       // 设置宽度, 浮点数竟然在mac16寸上会有问题
-      width: Math.floor(client.width/1.5),
+      width: Math.floor(client.width / 1.5),
       // 设置高度
-      height: Math.floor(client.height/1.5),
+      height: Math.floor(client.height / 1.5),
       // 隐藏窗口标题栏，方便自定义标题栏
-      titleBarStyle: 'hidden',  
-          // 默认展示出窗口
+      titleBarStyle: 'hidden',
+      // 默认展示出窗口
       show: false,
       webPreferences: {
         preload: path.resolve(__dirname, '../preload/home.js'),
@@ -50,38 +52,58 @@ class Home extends EventEmitter {
     })
     // 开发环境下的渲染进程地址
     if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-      this.win.loadURL(process.env['ELECTRON_RENDERER_URL']+'/home/index.html')
+      this.win.loadURL(process.env['ELECTRON_RENDERER_URL'] + '/home/index.html')
     } else {
       // 生产环境下的渲染进程地址
       this.win.loadFile(path.join(__dirname, '../renderer/home/index.html'))
     }
+
+
+    this.load()
     this.bindAppEvent();
     this.bindWinEvent();
     this.ipcBind();
 
   }
+  // dock栏图标上进度条展示
+  load() {
+    const INCREMENT = 0.01
+    const INTERVAL_DELAY = 60 // ms
 
+    let c = 0
+    Home.progressInterval = setInterval(() => {
+      // update progress bar to next value
+      // values between 0 and 1 will show progress, >1 will show indeterminate or stick at 100%
+      this.win?.setProgressBar(c)
+      // increment or reset progress bar
+      if (c < 1) {
+        c += INCREMENT
+      } else {
+        clearInterval(Home.progressInterval)
+
+        this.win?.setProgressBar(-1)
+      }
+    }, INTERVAL_DELAY)
+  }
   bindAppEvent() {
     // 新起一个程序,执行requestSingleInstanceLock的时候会触发其他程序的`second-instance`事件，这是后将第一个app的窗口打开
     app.on('second-instance', () => {
-      if (this.win?.isMinimized()){
+      if (this.win?.isMinimized()) {
         this.win.restore()
       }
       this.win?.show()
     })
     app.on('activate', () => {
-      if(this.win?.isVisible()){
-        this.win?.hide()
-      } else {
-        if (this.win?.isMinimized()){
+      if (!this.win?.isVisible()) {
+        if (this.win?.isMinimized()) {
           this.win?.restore()
-        } else{
+        } else {
           this.win?.show()
         }
       }
     })
     // 关闭窗口会触发before-quit
-    app.on('before-quit',  (ev)=> {
+    app.on('before-quit', (ev) => {
       this.willQuitApp = true
       this.win?.close()
     })
@@ -110,18 +132,29 @@ class Home extends EventEmitter {
   ipcBind() {
     ipcMain.handle('updateCheck', async () => {
       // return await updateHandler(this.win)
-      if(this.win){
-        checkUpdate({win: this.win})
+      if (this.win) {
+        checkUpdate({ win: this.win })
       }
     })
-    ipcMain.handle('updateDownload', async (e, {version}) => {
+    ipcMain.handle('updateDownload', async (e, { version }) => {
       // return await updateHandler(this.win)
-      if(this.win){
-        downloadUpdate({win: this.win, version})
+      if (this.win) {
+        downloadUpdate({ win: this.win, version })
       }
+    })
+    ipcMain.on('openWindow', async (e, { windowName }) => {
+      // return await updateHandler(this.win)
+      import('../player').then(d => {
+        // console.log(d);
+        d.default.create()
+        console.log('create');
+
+
+        // d?.create?.()
+      })
     })
 
-    
+
   }
   async devStart() {
     await app.whenReady();
@@ -171,6 +204,7 @@ class Home extends EventEmitter {
         await this.start();
       }
       this.setTray();
+      this.win && createMenu(this.win)
 
       if (process.platform === "darwin") {
         app.dock.setIcon(path.resolve(__dirname, "../../public/128x128.png"));
@@ -202,8 +236,7 @@ class Home extends EventEmitter {
   }
 }
 
-app.whenReady().then(()=>{
+app.whenReady().then(() => {
   Home.create().startSingleApp();
-  createMenu()
 })
 

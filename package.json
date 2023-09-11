@@ -1,7 +1,8 @@
 {
-  "name": "xinyu-shovel",
+  "name": "xinyu",
   "version": "0.1.0",
   "description": "",
+  "productName": "xinyu",
   "main": "./out/main/home.js",
   "scripts": {
     "dev": "electron-vite -w",
