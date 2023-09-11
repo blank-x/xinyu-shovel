@@ -3,14 +3,20 @@ export type updateMessageTypes = {
   size?: number,
   version?: string,
 }
-
-export type homeExposeType = {
   // home
+export type homeExposeType = {
+
   onUpdate: (cb: (ev: any, msg: updateMessageTypes) => any) => any;
   updateCheck: () => any;
   updateDownload: (arg: { version: string }) => any
   cancelUpdateDownload: () => any;
   openWindow: (windowName: string) => any;
+}
+
+  // player
+export type playerExposeType = {
+  openSourceDialog: ()=>any;
+  onNewAudioPath: (cb: (path: string)=>any);
 }
 
 
@@ -22,7 +28,8 @@ declare global {
       openApp: (appPath: string) => void;
     };
     // search
-    homeExpose: homeExposeType
+    homeExpose: homeExposeType;
+    player: playerExposeType
   }
 }
 

@@ -142,6 +142,8 @@ class Home extends EventEmitter {
         downloadUpdate({ win: this.win, version })
       }
     })
+    console.log(111);
+    
     ipcMain.on('openWindow', async (e, { windowName }) => {
       // return await updateHandler(this.win)
       import('../player').then(d => {

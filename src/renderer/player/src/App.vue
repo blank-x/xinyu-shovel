@@ -1,6 +1,9 @@
 <template>
-  <Header />
-  <Main></Main>
+  <div class="flex-col flex h-screen ">
+    <Header />
+    <Main></Main>
+  </div>
+
 </template>
 
 <script lang="ts" setup>

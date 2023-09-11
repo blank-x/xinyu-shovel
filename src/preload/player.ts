@@ -3,7 +3,9 @@ import { contextBridge, ipcRenderer } from 'electron';
 if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld('player', {
-      // searchResize: () => ipcRenderer.invoke('search:resize'),
+      openSourceDialog: () => ipcRenderer.send('player:openSourceDialog'),
+      onNewAudioPath: (cb)=> ipcRenderer.on('new-audio-path', (e, filePath)=>cb(filePath))
+
       // searchEverying: (value) => ipcRenderer.invoke('search:everying', value),
       // openApp: (appPath) => ipcRenderer.invoke('search:openApp', appPath),
     })

@@ -31,6 +31,7 @@ export default defineConfig({
         input: {
           search: resolve(__dirname, 'src/main/search.ts'),
           home: resolve(__dirname, 'src/main/home/index.ts'),
+          player: resolve(__dirname, 'src/main/player/index.ts'),
         },
       },
     },
@@ -47,6 +48,7 @@ export default defineConfig({
         input: {
           search: resolve(__dirname, 'src/preload/search.ts'),
           home: resolve(__dirname, 'src/preload/home.ts'),
+          player: resolve(__dirname, 'src/preload/player.ts')
         },
       },
     },

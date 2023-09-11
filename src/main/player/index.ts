@@ -8,6 +8,7 @@ import {
   screen,
   globalShortcut,
   nativeImage,
+  dialog,
 } from "electron";
 import { is } from "@utils";
 import log from "electron-log";
@@ -49,7 +50,7 @@ class Player extends EventEmitter {
       // 隐藏窗口标题栏，方便自定义标题栏
       titleBarStyle: 'hidden',
       // 默认展示出窗口
-      show: true,
+      show: false,
       webPreferences: {
         preload: path.resolve(__dirname, '../preload/player.js'),
       }
@@ -83,7 +84,22 @@ class Player extends EventEmitter {
     return this.win;
   }
   ipcBind() {
-
+    ipcMain.on('player:openSourceDialog', ()=>{
+      console.log('player:openSourceDialog');
+      if(this.win){
+        const files = dialog.showOpenDialogSync(this.win, {
+          properties: ['openFile'],
+          filters: [{ name: 'Music', extensions: ['mp3', 'wav', 'ogg'] }]
+        });
+      
+        if (files) {
+          const filePath = files[0];
+          // 在渲染进程中触发播放音乐事件
+          this.win.webContents.send('new-audio-path', filePath);
+        }
+      }
+      
+    })
 
 
   }
