@@ -24,23 +24,27 @@ class Player extends EventEmitter {
   win: BrowserWindow | null;
   private willQuitApp = false;
   static create() {
+    console.log(Player.instance)
     if (!Player.instance) {
       Player.instance = new Player();
     } else {
-      Player.instance.win?.show()
+      Player.instance.win ? Player.instance.win.show() : Player.instance.createWin();
     }
-    console.log(1111);
 
     return Player.instance;
   }
   constructor() {
     super()
+    this.win = this.createWin()
+    this.ipcBind();
+
+  }
+
+  createWin(){
     const client = screen.getPrimaryDisplay().workArea;
     const x = Math.floor((client.width - client.width / 1.5) / 2) + 20
     const y = Math.floor((client.height - client.height / 1.5) / 2) + 20
-    console.log(x, y);
-
-    this.win = new BrowserWindow({
+    const win = new BrowserWindow({
       // 设置宽度, 浮点数竟然在mac16寸上会有问题
       width: Math.floor(client.width / 1.5),
       // 设置高度
@@ -53,33 +57,32 @@ class Player extends EventEmitter {
       show: false,
       webPreferences: {
         preload: path.resolve(__dirname, '../preload/player.js'),
+        // 音乐直接
+        webSecurity: false
       }
     })
+
     // 开发环境下的渲染进程地址
     if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-      this.win.loadURL(process.env['ELECTRON_RENDERER_URL'] + '/player/index.html')
+      win.loadURL(process.env['ELECTRON_RENDERER_URL'] + '/player/index.html')
     } else {
       // 生产环境下的渲染进程地址
-      this.win.loadFile(path.join(__dirname, '../renderer/player/index.html'))
+      win.loadFile(path.join(__dirname, '../renderer/player/index.html'))
     }
+    this.win = win;
 
-
-    this.bindWinEvent();
-    this.ipcBind();
-
-  }
-
-
-  bindWinEvent() {
     // 使用该事件 避免闪烁
     this.win?.on('ready-to-show', () => {
       this.win?.show()
 
     })
     this.win?.on('close', (e) => {
-      Player.instance = null
+      this.win = null
     })
+
+    return win;
   }
+ 
   getWin() {
     return this.win;
   }
@@ -95,6 +98,7 @@ class Player extends EventEmitter {
         if (files) {
           const filePath = files[0];
           // 在渲染进程中触发播放音乐事件
+
           this.win.webContents.send('new-audio-path', filePath);
         }
       }

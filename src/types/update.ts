@@ -3,6 +3,13 @@ export type updateMessageTypes = {
   size?: number,
   version?: string,
 }
+
+type baseExposeType = {
+  setStoreValue: (key: string, value: any) => void;
+  getStoreValue(key: string): any;
+
+}
+
   // home
 export type homeExposeType = {
 
@@ -29,7 +36,7 @@ declare global {
     };
     // search
     homeExpose: homeExposeType;
-    player: playerExposeType
+    player: playerExposeType & baseExposeType
   }
 }
 

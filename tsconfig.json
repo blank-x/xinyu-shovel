@@ -3,6 +3,8 @@
     "strict": true,
     "baseUrl": "./",
     "esModuleInterop": true,
+    "target": "ESNext",
+    "moduleResolution": "NodeNext",
     "paths": {
       "@renderer/*": [ "./src/renderer/src/*"],
       "@utils": ["./src/utils/"],

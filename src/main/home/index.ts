@@ -14,6 +14,9 @@ import log from "electron-log";
 import createMenu from './menu';
 import path from "path";
 import { EventEmitter } from "events";
+import Store from 'electron-store';
+
+
 // import { updateCheck, updateDownload } from 'constants/ipc';
 import { checkUpdate, downloadUpdate } from './update';
 
@@ -21,6 +24,9 @@ log.transports.file.resolvePath = () => path.join(app.getPath('home'), 'xinyu-sh
 // import SearchWindow from "./searchWindow";
 
 log.info("App starting...");
+
+const store = new Store();
+
 
 class Home extends EventEmitter {
   static instance: Home;
@@ -142,18 +148,21 @@ class Home extends EventEmitter {
         downloadUpdate({ win: this.win, version })
       }
     })
-    console.log(111);
     
     ipcMain.on('openWindow', async (e, { windowName }) => {
       // return await updateHandler(this.win)
       import('../player').then(d => {
-        // console.log(d);
         d.default.create()
-        console.log('create');
-
-
-        // d?.create?.()
       })
+    })
+
+    ipcMain.on('setStore', (_, key, value) => {
+      store.set(key, value)
+    })
+    
+    ipcMain.on('getStore', (_, key) => {
+      let value = store.get(key)
+      _.returnValue = value || ""
     })
 
 

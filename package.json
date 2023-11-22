@@ -14,7 +14,6 @@
     "postinstall": "electron-builder install-app-deps",
     "release": "npm run build && electron-builder",
     "builder": "npm run build && electron-builder",
-
     "update:server": "cd dist && http-server -p 3000",
     "build:mac": "npm run build && electron-builder --mac --config"
   },
@@ -24,6 +23,7 @@
     "about-window": "^1.15.2",
     "bplist-parser": "^0.3.2",
     "electron-log": "^4.4.8",
+    "electron-store": "^8.1.0",
     "electron-updater": "^5.3.0",
     "iconutil": "^1.0.2",
     "isbinaryfile": "^5.0.0",
